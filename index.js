@@ -1,38 +1,86 @@
+document.getElementById("button").addEventListener("click", main);
+
 let keys = [10000, 70000, 110000, 170000];
-let money = 500000;
+let wow = [];
 
-main(money);
+function main() {
+  wow = [];
 
-function main(money) {
-  let text = loop(money);
-  console.log(text);
+  let text = Number(document.getElementById("text").value)
+  loop(text);
+
+  let checkArray = [];
+  for (let row of wow) {
+    let add = 0;
+    for(let value of row) {
+      if (value) {
+        add += value;
+      }
+    }
+    checkArray.push(add);
+  }
+
+  let small = checkArray[0];
+  let smallkey = 0;
+  for (let i = 1; i < checkArray.length; i++) {
+    if (checkArray[i] < small) {
+      small = checkArray[i];
+      smallkey = i;
+    }
+  }
+
+  if(wow[smallkey][0]){
+    document.getElementById('1').innerHTML = wow[smallkey][0];
+  } else {
+    document.getElementById('1').innerHTML = 0;
+  }
+  if(wow[smallkey][1]){
+    document.getElementById('7').innerHTML = wow[smallkey][1];
+  } else {
+    document.getElementById('7').innerHTML = 0;
+  }
+  if(wow[smallkey][2]){
+    document.getElementById('11').innerHTML = wow[smallkey][2];
+  } else {
+    document.getElementById('11').innerHTML = 0;
+  }
+  if(wow[smallkey][3]){
+    document.getElementById('17').innerHTML = wow[smallkey][3];
+  } else {
+    document.getElementById('17').innerHTML = 0;
+  }
 }
 
-function loop(value) {
-  let pushYo = [];
+function loop(value, array = []) {
 
   for (let i = 0; i < keys.length; i++) {
     if (keys[i] <= value) {
-      console.log('start : ' + keys[i]);
-      let test = calculation(keys[i], value);
-      console.log('test', test);
-      pushYo.push(test);
-      console.log('push', pushYo);
-      console.log('----------');
+      calculation(keys[i], value, array, i);
     } else {
-      return pushYo;
+      break;
     }
   }
 };
 
-function calculation(key, value) {
+function calculation(key, value, array, i) {
+  let clone = cloneArray(array);
   let divide = Math.floor(value / key);
   let quotient = value % key;
 
-  console.log(quotient);
+  clone[i] = divide;
+
   if (quotient) {
-    loop(quotient);
+    loop(quotient, cloneArray(clone));
   }
-  console.log('k : ' + key + ' - v : ' + divide + ' - q : ' + quotient);
-  return divide;
+  else {
+    wow.push(clone);
+  }
+}
+
+function cloneArray(array) {
+  let clone = [];
+  for (let row of array) {
+    clone.push(row);
+  }
+  return clone
 }
