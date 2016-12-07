@@ -1,59 +1,54 @@
 document.getElementById("button").addEventListener("click", main);
 
 let keys = [10000, 70000, 110000, 170000];
-let wow = [];
+let resultAllObject;
 
 function main() {
-  wow = [];
+  resultAllObject = [];
 
-  let text = Number(document.getElementById("text").value)
-  loop(text);
+  let money = Number(document.getElementById("text").value);
 
-  let checkArray = [];
-  for (let row of wow) {
+  loop(money);
+
+  // 각각의 경우의 수의 총 합 구하기
+  let addArray = [];
+  for (let row of resultAllObject) {
     let add = 0;
-    for(let value of row) {
+
+    for (let value of row) {
       if (value) {
         add += value;
       }
     }
-    checkArray.push(add);
+
+    addArray.push(add);
   }
 
-  let small = checkArray[0];
-  let smallkey = 0;
-  for (let i = 1; i < checkArray.length; i++) {
-    if (checkArray[i] < small) {
-      small = checkArray[i];
+  // 총합이 제일 낮은 값과 그 배열 위치를 찾기
+  let small = addArray[0]; // 비교 값
+  let smallkey = 0;        // 배열 위치 key
+  let limit = addArray.length;
+  for (let i = 1; i < limit; i++) {
+    if (addArray[i] < small) {
+      small = addArray[i];
       smallkey = i;
     }
   }
 
-  if(wow[smallkey][0]){
-    document.getElementById('1').innerHTML = wow[smallkey][0];
-  } else {
-    document.getElementById('1').innerHTML = 0;
+  // 출력
+  for (let i = 0; i < 4; i++) {
+    if (resultAllObject[smallkey][i]) {
+      document.getElementById('print_' + i).innerHTML = resultAllObject[smallkey][i];
+    } else {
+      document.getElementById('print_' + i).innerHTML = 0;
+    }
   }
-  if(wow[smallkey][1]){
-    document.getElementById('7').innerHTML = wow[smallkey][1];
-  } else {
-    document.getElementById('7').innerHTML = 0;
-  }
-  if(wow[smallkey][2]){
-    document.getElementById('11').innerHTML = wow[smallkey][2];
-  } else {
-    document.getElementById('11').innerHTML = 0;
-  }
-  if(wow[smallkey][3]){
-    document.getElementById('17').innerHTML = wow[smallkey][3];
-  } else {
-    document.getElementById('17').innerHTML = 0;
-  }
-}
+};
 
 function loop(value, array = []) {
+  let limit = keys.length;
 
-  for (let i = 0; i < keys.length; i++) {
+  for (let i = 0; i < limit; i++) {
     if (keys[i] <= value) {
       calculation(keys[i], value, array, i);
     } else {
@@ -63,24 +58,25 @@ function loop(value, array = []) {
 };
 
 function calculation(key, value, array, i) {
-  let clone = cloneArray(array);
-  let divide = Math.floor(value / key);
-  let quotient = value % key;
+  let copy = cloneArray(array);
+  let divide = Math.floor(value / key); // 몫
+  let quotient = value % key;           // 나머지 값
 
-  clone[i] = divide;
+  copy[i] = divide;
 
   if (quotient) {
-    loop(quotient, cloneArray(clone));
+    loop(quotient, cloneArray(copy));
+  } else {
+    resultAllObject.push(copy);
   }
-  else {
-    wow.push(clone);
-  }
-}
+};
 
 function cloneArray(array) {
-  let clone = [];
+  let copy = [];
+
   for (let row of array) {
-    clone.push(row);
+    copy.push(row);
   }
-  return clone
-}
+
+  return copy
+};
