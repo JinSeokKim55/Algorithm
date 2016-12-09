@@ -1,82 +1,66 @@
 document.getElementById("button").addEventListener("click", main);
 
-let keys = [10000, 70000, 110000, 170000];
-let resultAllObject;
+let keys = [170000, 110000, 70000, 10000];
+let resultAllObject = [];
+
+main();
 
 function main() {
-  resultAllObject = [];
+  let limit = keys.length;
+  let money = Number(document.getElementById("text").value); // 나머지 값
+  // let money = 50000;
 
-  let money = Number(document.getElementById("text").value);
+  let newKeys = [];
+  let saveObject = [];
 
-  loop(money);
+  for (let count = 0; count < limit; count++) {
+    if (keys[count] <= money) {
+      newKeys.push(keys[count]);
+    } else {
+      saveObject.push(0);
+    }
+  }
 
-  // 각각의 경우의 수의 총 합 구하기
-  let addArray = [];
-  for (let row of resultAllObject) {
-    let add = 0;
+  let newlimit = newKeys.length;
 
-    for (let value of row) {
-      if (value) {
-        add += value;
+  for (let count = 0; count < newlimit; count++) {
+    // 몫
+    let divide = Math.floor(money / newKeys[count]);
+
+    if (divide > 0) {
+      // 나머지값
+      let quotient = money % newKeys[count];
+
+      if ((count === 0 && quotient < newKeys[1]) || divide > 1 && quotient < newKeys[1] && count+1 >= newlimit) {
+        divide--;
+        quotient = money - (newKeys[count] * divide);
       }
-    }
 
-    addArray.push(add);
-  }
+      if (divide) {
+        resultAllObject[count] = divide;
+      } else {
+        resultAllObject[count] = 0;
+      }
 
-  // 총합이 제일 낮은 값과 그 배열 위치를 찾기
-  let small = addArray[0]; // 비교 값
-  let smallkey = 0;        // 배열 위치 key
-  let limit = addArray.length;
-  for (let i = 1; i < limit; i++) {
-    if (addArray[i] < small) {
-      small = addArray[i];
-      smallkey = i;
+      money = quotient;
+    } else {
+      resultAllObject[count] = 0;
     }
   }
+  resultAllObject = saveObject.concat(resultAllObject);
+  resultAllObject = resultAllObject.reverse();
+
+  console.log(resultAllObject);
 
   // 출력
-  for (let i = 0; i < 4; i++) {
-    if (resultAllObject[smallkey][i]) {
-      document.getElementById('print_' + i).innerHTML = resultAllObject[smallkey][i];
+  for (let i = 0; i < resultAllObject.length ; i++) {
+    if (resultAllObject[i]) {
+      document.getElementById('print_' + i).innerHTML = resultAllObject[i];
     } else {
       document.getElementById('print_' + i).innerHTML = 0;
     }
   }
-};
 
-function loop(value, array = []) {
-  let limit = keys.length;
-
-  for (let i = 0; i < limit; i++) {
-    if (keys[i] <= value) {
-      calculation(keys[i], value, array, i);
-    } else {
-      break;
-    }
-  }
-};
-
-function calculation(key, value, array, i) {
-  let copy = cloneArray(array);
-  let divide = Math.floor(value / key); // 몫
-  let quotient = value % key;           // 나머지 값
-
-  copy[i] = divide;
-
-  if (quotient) {
-    loop(quotient, cloneArray(copy));
-  } else {
-    resultAllObject.push(copy);
-  }
-};
-
-function cloneArray(array) {
-  let copy = [];
-
-  for (let row of array) {
-    copy.push(row);
-  }
-
-  return copy
+  // 배열 초기화
+  resultAllObject = [];
 };
